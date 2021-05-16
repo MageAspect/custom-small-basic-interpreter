@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 using namespace std;
 
@@ -54,7 +55,7 @@ private:
 		if (
 			strchr(" !;,+-<>'/*%^=()", simbol)
 			|| simbol == 9
-			|| simbol == 10 // \r
+			|| simbol == 10
 			|| simbol == 0
 			)
 		{
@@ -186,7 +187,14 @@ public:
 		throw TokenNotFoundException();
 	}
 
-	void serror(int) {
+	// Откатывает programCursor на переданный токен назад
+	void putBack(Token token) {
+		for (int i = 0; i < token.outer.length(); i++) {
+			this->programCursor--;
+		}
+	}
+
+	void serror(int type) {
 		cout << "gg" << endl;
 		exit(1);
 	}
