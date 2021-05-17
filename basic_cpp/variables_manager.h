@@ -8,6 +8,11 @@
 using namespace std;
 
 struct Variable {
+	Variable(string name, boost::variant<int, double> value) {
+		this->name = name;
+		this->value = value;
+	}
+	Variable() {}
 	string name;
 	boost::variant<int, double> value;
 };

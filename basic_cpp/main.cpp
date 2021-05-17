@@ -1,6 +1,8 @@
 #include "lexical_analyzer.h"
 #include "variables_manager.h"
+#include "expression_analizer.h"
 #include <fstream>
+#include <typeinfo>
 
 void main() {
     char* prog = (char*)malloc(1000);
@@ -17,46 +19,17 @@ void main() {
 
 	LexicalAnalyzer *lexicalAnalyzer = new LexicalAnalyzer(temp);
     VariablesStore* variablesStore = new VariablesStore();
+    ExpressionAnalizer* expressionAnalizer = new ExpressionAnalizer(lexicalAnalyzer, variablesStore);
+
+    variablesStore->addVariable(Variable("X", 15.411));
     
-    Token token;
-    try {
-        do {
-            token = lexicalAnalyzer->getToken();
-            if (token.type == lexicalAnalyzer->VARIABLE) {
-            
-            }
-            else if (token.type == lexicalAnalyzer->COMMAND) {
-                
-            }
+    cout << lexicalAnalyzer->getToken().outer << endl;
 
-        } while (token.inner != lexicalAnalyzer->FINISHED);
-    }
-    catch (TokenNotFoundException e) {
-        cout << "Token not found";
-    }
+    boost::variant<int, double> result = 1.0;
 
-    try {
-        Variable var;
-        var.name = "hello";
-        var.value = 123;
+    result = expressionAnalizer->calcNextExpersion();
 
-        variablesStore->addVariable(var);
-        cout << variablesStore->getVariableByName(var.name).name << endl;
+    cout << result << " " << result.type().name();
 
-        var.value = 123.5;
-        variablesStore->setVariable(var);
-        cout << variablesStore->getVariableByName(var.name).value << endl;
-
-        
-    }
-    catch (VariableNotFoundException e) {
-        cout << "Variable not found";
-    }
-    catch (VariableWrongNameException) {
-        cout << "Variable Wrong name";
-    }
-    catch (VariableDublicateException) {
-        cout << "Variable Dublicate !";
-    }
 }
 
