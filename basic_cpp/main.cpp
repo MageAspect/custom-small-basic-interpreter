@@ -1,35 +1,39 @@
 #include "lexical_analyzer.h"
 #include "variables_manager.h"
 #include "expression_analizer.h"
+#include "command_executor.h"
 #include <fstream>
 #include <typeinfo>
 
 void main() {
-    char* prog = (char*)malloc(1000);
+    char* temp = (char*)malloc(1000);
 
     ifstream program;
     program.open("C:\\Users\\markp\\Desktop\\volsu\\6_semester\\processes\\basic_c\\proga1.txt");
 
-    char* temp = prog;
-    while (program.get(*prog)) {
-        prog++;
+    char* prog = temp;
+    while (program.get(*temp)) {
+        temp++;
     }
-    *prog = '\0';
+    *temp = '\0';
 
-
-	LexicalAnalyzer *lexicalAnalyzer = new LexicalAnalyzer(temp);
+	LexicalAnalyzer* lexicalAnalyzer = new LexicalAnalyzer(prog);
     VariablesStore* variablesStore = new VariablesStore();
     ExpressionAnalizer* expressionAnalizer = new ExpressionAnalizer(lexicalAnalyzer, variablesStore);
+    CommandExecutor* commandExecutor = new CommandExecutor(lexicalAnalyzer, expressionAnalizer, variablesStore);
 
-    variablesStore->addVariable(Variable("X", 15.411));
-    
-    cout << lexicalAnalyzer->getToken().outer << endl;
+    Token token;
 
-    boost::variant<int, double> result = 1.0;
+    do {
+        token = lexicalAnalyzer->getToken();
 
-    result = expressionAnalizer->calcNextExpersion();
+        if (token.type == lexicalAnalyzer->tokenTypes.VARIABLE) {
+            commandExecutor->executeAssigment(token);
+        }
+        else if (token.type == lexicalAnalyzer->tokenTypes.COMMAND) {
+            commandExecutor->executeCommand(token);
+        }
 
-    cout << result << " " << result.type().name();
-
+    } while (token.inner != lexicalAnalyzer->commandsInner.FINISHED);
 }
 

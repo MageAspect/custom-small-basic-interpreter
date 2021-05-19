@@ -119,7 +119,7 @@ public:
 	Token getToken() {
 		Token* token = new Token();
 
-		while (isspace(*this->programCursor)) {
+		while (*this->programCursor == ' ' || *this->programCursor == '\t' || *this->programCursor == '\r') {
 			this->programCursor++;
 		}
 
@@ -133,9 +133,9 @@ public:
 			return *token;
 		}
 
-		if (*this->programCursor == 10) { // '\r'
+		if (*this->programCursor == '\n') { 
 			token->inner = this->commandsInner.EOL;
-			token->outer = "\r";
+			token->outer = "\n";
 			token->type = this->tokenTypes.DELIMITER;
 
 			this->programCursor++;
@@ -160,7 +160,7 @@ public:
 			}
 
 			// ≈сли произошЄл перенос строки до того, как была встречена закрывающа€ ковычка
-			if (*this->programCursor == 10) this->serror(1);// \n
+			if (*this->programCursor == 10) this->serror(1); // \n
 			this->programCursor++;
 
 			token->type = this->tokenTypes.QUOTE;

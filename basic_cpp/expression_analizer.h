@@ -192,11 +192,15 @@ public:
             if (this->currentToken.type == this->lexicalAnalyzer->tokenTypes.VARIABLE) {
                 Variable var = variablesStore->getVariableByName(this->currentToken.outer);
                 string varType = var.value.type().name();
+               
                 if (varType == "double") {
                     expType = this->lexicalAnalyzer->tokenTypes.DOUBLE;
                 }
             }
-        } while (this->currentToken.inner != this->lexicalAnalyzer->commandsInner.FINISHED);
+        } while (
+            this->currentToken.inner != this->lexicalAnalyzer->commandsInner.FINISHED
+            && this->currentToken.inner != this->lexicalAnalyzer->commandsInner.EOL
+            );
         
         if (expType == 0) {
             expType = this->lexicalAnalyzer->tokenTypes.INTEGER;
