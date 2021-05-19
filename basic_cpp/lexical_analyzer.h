@@ -9,12 +9,21 @@ using namespace std;
 
 class CommandNotFoundException : public exception {};
 class TokenNotFoundException : public exception {};
+class LabelNotFoundException : public exception {};
 
-struct Token
-{
+struct Token {
 	string outer;
 	int inner;
 	int type;
+};
+
+struct Label {
+	Label(int number, char* programPosision) {
+		this->number = number;
+		this->programPosision = programPosision;
+	}
+	int number;
+	char* programPosision;
 };
 
 struct Command {
@@ -35,6 +44,8 @@ private:
 	char* lastTokenStartPosition;
 
 	char* savedProgramCursorPosition;
+
+	vector<Label>* labels = new vector<Label>();
 
 	vector<Command>* commands = new vector<Command>();
 
@@ -102,18 +113,36 @@ public:
 		this->commands->push_back(Command("print", this->commandsInner.PRINT));
 		this->commands->push_back(Command("input", this->commandsInner.INPUT));
 		this->commands->push_back(Command("if", this->commandsInner.IF));
-		this->commands->push_back(Command("then", this->commandsInner.GOTO));
-		this->commands->push_back(Command("goto", this->commandsInner.FOR));
-		this->commands->push_back(Command("for", this->commandsInner.NEXT));
+		this->commands->push_back(Command("then", this->commandsInner.THEN));
+		this->commands->push_back(Command("goto", this->commandsInner.GOTO));
+		this->commands->push_back(Command("next", this->commandsInner.NEXT));
+		this->commands->push_back(Command("for", this->commandsInner.FOR));
 		this->commands->push_back(Command("to", this->commandsInner.TO));
 		this->commands->push_back(Command("gosub", this->commandsInner.GOSUB));
 		this->commands->push_back(Command("return", this->commandsInner.RETURN));
 		this->commands->push_back(Command("end", this->commandsInner.END));
 		this->commands->push_back(Command("", this->commandsInner.END));
-
+		
 		this->programCursor = programCode;
 		this->savedProgramCursorPosition = programCode;
 		this->lastTokenStartPosition = programCode;
+
+		// Заполнение меток для дальнейшей работы GOTO и GOSUB
+		this->saveProgramCursorPosition();
+
+		Token token;
+		do {
+			token = this->getToken();
+
+			if (token.type == this->tokenTypes.INTEGER) {
+				this->labels->push_back(Label(stoi(token.outer), this->programCursor));
+			}
+
+			this->toNExtEOL();
+
+		} while (token.inner != this->commandsInner.FINISHED);
+
+		this->rollBackToSavedPosition();
 	}
 
 	Token getToken() {
@@ -205,6 +234,15 @@ public:
 		throw TokenNotFoundException();
 	}
 
+	Label getLabelByNumber(int number) {
+		for (Label l : *this->labels) {
+			if (l.number == number) {
+				return l;
+			}
+		}
+		throw LabelNotFoundException();
+	}
+
 	// Сохраняет позицию указателя на анализируемый символ программы this->programCursor
 	void saveProgramCursorPosition() {
 		this->savedProgramCursorPosition = this->programCursor;
@@ -224,10 +262,33 @@ public:
 		}
 	}
 
+	char* getProgramCursor() {
+		return this->programCursor;
+	}
+
+	void setProgramCursor(char* newC) {
+		 this->programCursor = newC;
+	}
+
+	void toNExtEOL() {
+		Token token;
+
+		do {
+			token = this->getToken();
+		} while (
+			token.inner != this->commandsInner.EOL 
+			&& token.inner != this->commandsInner.FINISHED
+			);
+	}
+
 	void toNextToken() {
 		if (this->lastTokenStartPosition != nullptr) {
 			this->getToken();
 		}
+	}
+
+	void toLabel(Label l) {
+		this->programCursor = l.programPosision;
 	}
 
 	void serror(int type) {
