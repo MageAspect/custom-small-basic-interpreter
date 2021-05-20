@@ -89,8 +89,13 @@ private:
     template <typename T>
     void primitive(T* result) {
         if (this->currentToken.type == this->lexicalAnalyzer->tokenTypes.VARIABLE) {
-            string varType = this->variablesStore->getVariableByName(this->currentToken.outer).value.type().name();
-
+            string varType;
+            try {
+                varType = this->variablesStore->getVariableByName(this->currentToken.outer).value.type().name();
+            }
+            catch (VariableNotFoundException) {
+                this->lexicalAnalyzer->serror(4);
+            }
             if (varType == "int") {
                 *result = boost::get<int>(this->variablesStore->getVariableByName(this->currentToken.outer).value);
             }
@@ -190,7 +195,13 @@ public:
                 expType = this->lexicalAnalyzer->tokenTypes.DOUBLE;
             }
             if (this->currentToken.type == this->lexicalAnalyzer->tokenTypes.VARIABLE) {
-                Variable var = variablesStore->getVariableByName(this->currentToken.outer);
+                Variable var;
+                try {
+                    var = variablesStore->getVariableByName(this->currentToken.outer);
+                }
+                catch (VariableNotFoundException) {
+                    this->lexicalAnalyzer->serror(2);
+                }
                 string varType = var.value.type().name();
                
                 if (varType == "double") {
