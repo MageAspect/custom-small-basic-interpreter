@@ -18,6 +18,7 @@ struct Token {
 };
 
 struct Label {
+	Label() {}
 	Label(int number, char* programPosision) {
 		this->number = number;
 		this->programPosision = programPosision;

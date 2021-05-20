@@ -4,6 +4,7 @@
 #include "boost\lexical_cast.hpp"
 
 class ForDepthLimitException : public exception {};
+class GoSubDepthLimitException : public exception {};
 
 struct ForCycle {
 	Variable var; // счетчик цикла
@@ -15,29 +16,49 @@ class ForStack {
 private:
 	vector<ForCycle>* stack = new vector<ForCycle>();
 
-	int depthCount = 1;
-
 public:
 	void push(ForCycle fc) {
-		this->stack->push_back(fc);
-		if (this->depthCount + 1 > 25) {
+		if (this->stack->size() >= 25) {
 			throw ForDepthLimitException();
 		}
-		this->depthCount++;
+
+		this->stack->push_back(fc);
 	}
 
 	bool isEmpty() {
-		return this->depthCount <= 0;
+		return this->stack->empty();
 	}
 
 	ForCycle pop() {
-		this->depthCount--;
-		ForCycle tmp;
-		tmp = this->stack->back();
+		ForCycle tmp = this->stack->back();
 		this->stack->pop_back();
 		return tmp;
 	}
 
+};
+
+class GoSubStack {
+private:
+	vector<char*>* stack = new vector<char*>();
+
+public:
+	void push(char* fc) {
+		if (this->stack->size() >= 25) {
+			throw GoSubDepthLimitException();
+		}
+
+		this->stack->push_back(fc);
+	}
+
+	bool isEmpty() {
+		return this->stack->empty();
+	}
+
+	char* pop() {
+		char* tmp = this->stack->back();
+		this->stack->pop_back();
+		return tmp;
+	}
 };
 
 class CommandExecutor {
@@ -47,6 +68,7 @@ private:
 	VariablesStore* variablesStore;
 
 	ForStack* forStack = new ForStack();
+	GoSubStack* goSubStack = new GoSubStack();
 
 	void executePrint() {
 		boost::variant<int, double> expResult;
@@ -147,7 +169,6 @@ private:
 			break;
 		case '>':
 			if (xExp > yExp) cond = 1;
-			cout << xExp << " " << yExp << endl;
 			break;
 		}
 
@@ -178,7 +199,14 @@ private:
 		else {
 			cout << "? ";
 		}
-		Variable var = this->variablesStore->getVariableByName(token.outer);
+		Variable var;
+		try {
+			var = this->variablesStore->getVariableByName(token.outer);
+		}
+		catch (VariableNotFoundException) {
+			var.name = token.outer;
+			this->variablesStore->addVariable(var);
+		}
 
 		int value;
 		cin >> value;
@@ -186,8 +214,26 @@ private:
 		var.value = value;
 		this->variablesStore->setVariable(var);
 	}
-	void executeGosub() {}
-	void executeReturn() {}
+	void executeGosub() {
+		Token token = this->lexicalAnalyzer->getToken();
+		Label label;
+		try {
+			label = this->lexicalAnalyzer->getLabelByNumber(stoi(token.outer));
+		}
+		catch (LabelNotFoundException) {
+			this->lexicalAnalyzer->serror(7);
+		}
+		this->goSubStack->push(this->lexicalAnalyzer->getProgramCursor());
+		this->lexicalAnalyzer->setProgramCursor(label.programPosision);  // Место, куда переходим
+	}
+	void executeReturn() {
+		if (!this->goSubStack->isEmpty()) { 
+			this->lexicalAnalyzer->setProgramCursor(this->goSubStack->pop());
+		}
+		else {
+			this->lexicalAnalyzer->serror(0);
+		}
+	}
 	void executeFor() {
 		ForCycle fc;
 
@@ -260,6 +306,9 @@ public:
 		}
 		else if (commandToken.inner == this->lexicalAnalyzer->commandsInner.RETURN) {
 			return this->executeReturn();
+		}
+		else if (commandToken.inner == this->lexicalAnalyzer->commandsInner.END) {
+			return this->executeEnd();
 		}
 	}
 
