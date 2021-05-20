@@ -1,14 +1,13 @@
 #pragma once
 #include "lexical_analyzer.h"
 #include "expression_analizer.h"
-#include "boost\lexical_cast.hpp"
 
 class ForDepthLimitException : public exception {};
 class GoSubDepthLimitException : public exception {};
 
 struct ForCycle {
 	Variable var; // счетчик цикла
-	int target; //конечное значение
+	double target; //конечное значение
 	char* position;
 };
 
@@ -71,7 +70,7 @@ private:
 	GoSubStack* goSubStack = new GoSubStack();
 
 	void executePrint() {
-		boost::variant<int, double> expResult;
+		double expResult;
 		int printableContentLenght = 0; 
 		int spacesCount;
 		Token token;
@@ -99,7 +98,7 @@ private:
 				expResult = this->expressionAnalizer->calcNextExpersion();
 				token = this->lexicalAnalyzer->getToken();
 
-				string str = boost::lexical_cast<string>(expResult);
+				string str = to_string(expResult);
 				cout << expResult;
 				printableContentLenght += str.length();
 			}
@@ -149,7 +148,7 @@ private:
 		int x, y, cond;
 		char operation;
 
-		boost::variant<int, double> xExp = this->expressionAnalizer->calcNextExpersion();
+		double xExp = this->expressionAnalizer->calcNextExpersion();
 
 		Token token = this->lexicalAnalyzer->getToken();
 		operation = token.outer[0];
@@ -157,7 +156,7 @@ private:
 		if (!strchr("=<>", operation)) {
 			this->lexicalAnalyzer->serror(0);
 		}
-		boost::variant<int, double> yExp = this->expressionAnalizer->calcNextExpersion();
+		double yExp = this->expressionAnalizer->calcNextExpersion();
 
 		cond = 0;
 		switch (operation) {
@@ -249,8 +248,8 @@ private:
 			this->lexicalAnalyzer->serror(9);
 		} 
 
-		boost::variant<int, double> target = this->expressionAnalizer->calcNextExpersion();
-		fc.target = boost::get<int>(target);
+		double target = this->expressionAnalizer->calcNextExpersion();
+		fc.target = target;
 		
 		fc.position = this->lexicalAnalyzer->getProgramCursor();
 		this->forStack->push(fc);
@@ -262,7 +261,7 @@ private:
 		}
 		ForCycle fc = this->forStack->pop();
 
-		int value = boost::get<int>(fc.var.value);
+		double value = fc.var.value;
 		value++;
 		fc.var.value = value;
 		this->variablesStore->setVariable(fc.var);
@@ -333,7 +332,7 @@ public:
 			this->lexicalAnalyzer->serror(4);
 		}
 
-		boost::variant<int, double> expResult = this->expressionAnalizer->calcNextExpersion();
+		double expResult = this->expressionAnalizer->calcNextExpersion();
 		var.value = expResult;
 		this->variablesStore->setVariable(var);
 	}

@@ -3,10 +3,10 @@
 #include "expression_analizer.h"
 #include "command_executor.h"
 #include <fstream>
-#include <typeinfo>
 
 void main() {
     setlocale(LC_ALL, "Russian");
+
     char* temp = (char*)malloc(1000);
 
     ifstream program;

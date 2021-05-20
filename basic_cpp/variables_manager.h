@@ -1,5 +1,4 @@
 #pragma once
-#include "boost\variant.hpp"
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -8,13 +7,13 @@
 using namespace std;
 
 struct Variable {
-	Variable(string name, boost::variant<int, double> value) {
+	Variable(string name, double value) {
 		this->name = name;
 		this->value = value;
 	}
 	Variable() {}
 	string name;
-	boost::variant<int, double> value;
+	double value;
 };
 
 class VariableNotFoundException : public exception {};

@@ -1,9 +1,7 @@
 #pragma once
 #include "lexical_analyzer.h"
 #include "variables_manager.h"
-#include "boost\variant.hpp"
 #include "cmath"
-#include <typeinfo>
 
 class ExpressionAnalizer {
 private:
@@ -89,19 +87,8 @@ private:
     template <typename T>
     void primitive(T* result) {
         if (this->currentToken.type == this->lexicalAnalyzer->tokenTypes.VARIABLE) {
-            string varType;
-            try {
-                varType = this->variablesStore->getVariableByName(this->currentToken.outer).value.type().name();
-            }
-            catch (VariableNotFoundException) {
-                this->lexicalAnalyzer->serror(4);
-            }
-            if (varType == "int") {
-                *result = boost::get<int>(this->variablesStore->getVariableByName(this->currentToken.outer).value);
-            }
-            if (varType == "double") {
-                *result = boost::get<double>(this->variablesStore->getVariableByName(this->currentToken.outer).value);
-            }
+            
+            *result = this->variablesStore->getVariableByName(this->currentToken.outer).value;
 
             this->loadNextToken();
             return;
@@ -158,66 +145,16 @@ public:
 		this->variablesStore = variablesStore;
 	}
 
-    boost::variant<int, double> calcNextExpersion() {
-        int expType = this->getNextExpresionType();
-        boost::variant<int, double> result;
+    double calcNextExpersion() {
+        double* result = new double();
         
-        if (expType == this->lexicalAnalyzer->tokenTypes.DOUBLE) {
-            double* tempRes = new double();
-            this->loadNextToken();
+        this->loadNextToken();
 
-            this->sum2(tempRes);
+        this->sum2(result);
 
-            this->lexicalAnalyzer->toPreviousToken();
+        this->lexicalAnalyzer->toPreviousToken();
 
-            return result = *tempRes;
-        }
-        
-        if (expType == this->lexicalAnalyzer->tokenTypes.INTEGER) {
-            int* tempRes = new int();
-            this->loadNextToken();
-
-            this->sum2(tempRes);
-
-            this->lexicalAnalyzer->toPreviousToken();
-
-            return result = *tempRes;
-        }
+        return *result;
 	}
 
-    int getNextExpresionType() {
-        this->lexicalAnalyzer->saveProgramCursorPosition();
-        int expType = 0;
-
-        do {
-            this->loadNextToken();
-            if (this->currentToken.type == this->lexicalAnalyzer->tokenTypes.DOUBLE) {
-                expType = this->lexicalAnalyzer->tokenTypes.DOUBLE;
-            }
-            if (this->currentToken.type == this->lexicalAnalyzer->tokenTypes.VARIABLE) {
-                Variable var;
-                try {
-                    var = variablesStore->getVariableByName(this->currentToken.outer);
-                }
-                catch (VariableNotFoundException) {
-                    this->lexicalAnalyzer->serror(2);
-                }
-                string varType = var.value.type().name();
-               
-                if (varType == "double") {
-                    expType = this->lexicalAnalyzer->tokenTypes.DOUBLE;
-                }
-            }
-        } while (
-            this->currentToken.inner != this->lexicalAnalyzer->commandsInner.FINISHED
-            && this->currentToken.inner != this->lexicalAnalyzer->commandsInner.EOL
-            );
-        
-        if (expType == 0) {
-            expType = this->lexicalAnalyzer->tokenTypes.INTEGER;
-        }
-        
-        this->lexicalAnalyzer->rollBackToSavedPosition();
-        return expType;
-    }
 };
