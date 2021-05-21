@@ -5,12 +5,10 @@
 #include <fstream>
 
 void main() {
-    setlocale(LC_ALL, "Russian");
-
     char* temp = (char*)malloc(1000);
 
     ifstream program;
-    program.open("C:\\Users\\markp\\Desktop\\volsu\\6_semester\\processes\\basic_c\\proga1.txt");
+    program.open("C:\\Users\\mosow\\Desktop\\volsu\\processes\\basic_cpp\\proga1.txt");
 
     char* prog = temp;
     while (program.get(*temp)) {
@@ -25,7 +23,7 @@ void main() {
 
     Token token;
 
-    do {
+    do { 
         token = lexicalAnalyzer->getToken();
 
         if (token.type == lexicalAnalyzer->tokenTypes.VARIABLE) {

@@ -1,0 +1,12 @@
+PRINT "This program demonstrate all commands."
+GOSUB 300
+FOR X = 1 TO 10+3
+	PRINT X, " ", X * 2; X, " ", X * X
+NEXT
+INPUT "Enter number > 0: ", A
+IF A<0 THEN GOTO 200
+IF A>0 THEN PRINT "Good job"
+200 PRINT "ur wrong!"
+END
+300 PRINT "This is function"
+RETURN

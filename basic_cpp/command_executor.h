@@ -6,8 +6,8 @@ class ForDepthLimitException : public exception {};
 class GoSubDepthLimitException : public exception {};
 
 struct ForCycle {
-	Variable var; // счетчик цикла
-	double target; //конечное значение
+	Variable var; // Счетчик цикла
+	int target; // Конечное значение
 	char* position;
 };
 
@@ -95,7 +95,7 @@ private:
 			}
 			else { // Выражение
 				this->lexicalAnalyzer->toPreviousToken();
-				expResult = this->expressionAnalizer->calcNextExpersion();
+				expResult = this->expressionAnalizer->calcNextExpression();
 				token = this->lexicalAnalyzer->getToken();
 
 				string str = to_string(expResult);
@@ -103,7 +103,7 @@ private:
 				printableContentLenght += str.length();
 			}
 
-			if (token.outer == ";") {  //вычисление числа пробелов при переходе к следующей табуляции
+			if (token.outer == ";") {  // Вычисление числа пробелов при переходе к следующей табуляции
 				spacesCount = 8 - (printableContentLenght % 8);
 				printableContentLenght += spacesCount;
 				while (spacesCount) {
@@ -148,7 +148,7 @@ private:
 		int x, y, cond;
 		char operation;
 
-		double xExp = this->expressionAnalizer->calcNextExpersion();
+		double xExp = this->expressionAnalizer->calcNextExpression();
 
 		Token token = this->lexicalAnalyzer->getToken();
 		operation = token.outer[0];
@@ -156,7 +156,7 @@ private:
 		if (!strchr("=<>", operation)) {
 			this->lexicalAnalyzer->serror(0);
 		}
-		double yExp = this->expressionAnalizer->calcNextExpersion();
+		double yExp = this->expressionAnalizer->calcNextExpression();
 
 		cond = 0;
 		switch (operation) {
@@ -177,7 +177,7 @@ private:
 				this->lexicalAnalyzer->serror(8);
 				return;
 			}
-			//програма продолжается со след строчки => выполняется условие if
+			// Програма продолжается со след строчки => выполняется условие if
 		}
 		else this->lexicalAnalyzer->toNExtEOL();
 	}
@@ -236,11 +236,10 @@ private:
 	void executeFor() {
 		ForCycle fc;
 
-		//чтение управляющей переменной
+		// чтение управляющей переменной
 		Token token = this->lexicalAnalyzer->getToken();
 		this->executeAssigment(token);
 		Variable var = this->variablesStore->getVariableByName(token.outer);
-		//cout << endl << var.value << " " + token.outer << endl;
 		fc.var = var;
 
 		token = this->lexicalAnalyzer->getToken();
@@ -248,7 +247,7 @@ private:
 			this->lexicalAnalyzer->serror(9);
 		} 
 
-		double target = this->expressionAnalizer->calcNextExpersion();
+		double target = this->expressionAnalizer->calcNextExpression();
 		fc.target = target;
 		
 		fc.position = this->lexicalAnalyzer->getProgramCursor();
@@ -330,9 +329,9 @@ public:
 
 		if (assigmentToken.outer != "=") {
 			this->lexicalAnalyzer->serror(4);
-		}
+		} 
 
-		double expResult = this->expressionAnalizer->calcNextExpersion();
+		double expResult = this->expressionAnalizer->calcNextExpression();
 		var.value = expResult;
 		this->variablesStore->setVariable(var);
 	}
