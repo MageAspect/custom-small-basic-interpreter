@@ -96,6 +96,7 @@ public:
 		const int GOSUB = 11;
 		const int RETURN = 12;
 		const int END = 13;
+		const int STEP = 14;
 	} commandsInner;
 
 	// Доступные типы токенов
@@ -122,6 +123,7 @@ public:
 		this->commands->push_back(Command("gosub", this->commandsInner.GOSUB));
 		this->commands->push_back(Command("return", this->commandsInner.RETURN));
 		this->commands->push_back(Command("end", this->commandsInner.END));
+		this->commands->push_back(Command("step", this->commandsInner.STEP));
 		this->commands->push_back(Command("", this->commandsInner.END));
 		
 		this->programCursor = programCode;

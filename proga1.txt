@@ -1,6 +1,6 @@
 PRINT "This program demonstrate all commands."
 GOSUB 300
-FOR X = 1 TO 10+3
+FOR X = 1 TO 2 STEP 2
 	PRINT X, " ", X * 2; X, " ", X * X
 NEXT
 INPUT "Enter number > 0: ", A

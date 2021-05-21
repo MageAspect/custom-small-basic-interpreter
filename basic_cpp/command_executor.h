@@ -9,6 +9,7 @@ struct ForCycle {
 	Variable var; // Счетчик цикла
 	int target; // Конечное значение
 	char* position;
+	int step = 1;
 };
 
 class ForStack {
@@ -249,7 +250,17 @@ private:
 
 		double target = this->expressionAnalizer->calcNextExpression();
 		fc.target = target;
-		
+
+		Token stepToken = this->lexicalAnalyzer->getToken();
+
+		if (stepToken.inner == this->lexicalAnalyzer->commandsInner.STEP) {
+			int step = this->expressionAnalizer->calcNextExpression();
+			fc.step = step;
+		}
+		else {
+			this->lexicalAnalyzer->toPreviousToken();
+		}
+
 		fc.position = this->lexicalAnalyzer->getProgramCursor();
 		this->forStack->push(fc);
 	}
@@ -260,8 +271,8 @@ private:
 		}
 		ForCycle fc = this->forStack->pop();
 
-		double value = fc.var.value;
-		value++;
+		int value = fc.var.value;
+		value += fc.step;
 		fc.var.value = value;
 		this->variablesStore->setVariable(fc.var);
 

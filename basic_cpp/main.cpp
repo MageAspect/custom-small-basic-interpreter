@@ -5,6 +5,7 @@
 #include <fstream>
 
 void main() {
+    setlocale(LC_ALL, "Russian");
     char* temp = (char*)malloc(1000);
 
     ifstream program;
