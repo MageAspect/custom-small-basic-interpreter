@@ -13,7 +13,7 @@ struct Variable {
 	}
 	Variable() {}
 	string name;
-	double value;
+	double value = 0;
 };
 
 class VariableNotFoundException : public exception {};

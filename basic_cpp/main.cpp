@@ -5,11 +5,15 @@
 #include <fstream>
 
 void main() {
-    setlocale(LC_ALL, "Russian");
+    setlocale(LC_COLLATE, "Russian");
+    setlocale(LC_CTYPE, "Russian");
+    setlocale(LC_MONETARY, "Russian");
+    setlocale(LC_TIME, "Russian");
+
     char* temp = (char*)malloc(1000);
 
     ifstream program;
-    program.open("C:\\Users\\mosow\\Desktop\\volsu\\processes\\basic_cpp\\proga1.txt");
+    program.open("..\\proga1.txt");
 
     char* prog = temp;
     while (program.get(*temp)) {

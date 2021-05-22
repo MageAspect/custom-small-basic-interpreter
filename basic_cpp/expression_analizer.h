@@ -145,8 +145,8 @@ public:
 		this->variablesStore = variablesStore;
 	}
 
-    int calcNextExpression() {
-        int* result = new int();
+    double calcNextExpression() {
+        double* result = new double();
         
         this->loadNextToken();
 

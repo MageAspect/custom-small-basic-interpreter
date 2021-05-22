@@ -7,9 +7,9 @@ class GoSubDepthLimitException : public exception {};
 
 struct ForCycle {
 	Variable var; // Счетчик цикла
-	int target; // Конечное значение
+	double target; // Конечное значение
 	char* position;
-	int step = 1;
+	double step = 1;
 };
 
 class ForStack {
@@ -146,7 +146,7 @@ private:
 		lexicalAnalyzer->toLabel(l);
 	}
 	void executeIf() {
-		int x, y, cond;
+		int cond;
 		char operation;
 
 		double xExp = this->expressionAnalizer->calcNextExpression();
@@ -208,10 +208,8 @@ private:
 			this->variablesStore->addVariable(var);
 		}
 
-		int value;
-		cin >> value;
+		cin >> var.value;
 
-		var.value = value;
 		this->variablesStore->setVariable(var);
 	}
 	void executeGosub() {
@@ -254,8 +252,7 @@ private:
 		Token stepToken = this->lexicalAnalyzer->getToken();
 
 		if (stepToken.inner == this->lexicalAnalyzer->commandsInner.STEP) {
-			int step = this->expressionAnalizer->calcNextExpression();
-			fc.step = step;
+			fc.step = this->expressionAnalizer->calcNextExpression();
 		}
 		else {
 			this->lexicalAnalyzer->toPreviousToken();
@@ -271,12 +268,11 @@ private:
 		}
 		ForCycle fc = this->forStack->pop();
 
-		int value = fc.var.value;
-		value += fc.step;
-		fc.var.value = value;
+		fc.var.value += fc.step;
+		
 		this->variablesStore->setVariable(fc.var);
 
-		if (value > fc.target) { return; }
+		if (fc.var.value > fc.target) { return; }
 
 		this->forStack->push(fc);
 
