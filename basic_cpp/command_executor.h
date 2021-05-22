@@ -268,6 +268,8 @@ private:
 		}
 		ForCycle fc = this->forStack->pop();
 
+		fc.var = this->variablesStore->getVariableByName(fc.var.name);
+
 		fc.var.value += fc.step;
 		
 		this->variablesStore->setVariable(fc.var);
