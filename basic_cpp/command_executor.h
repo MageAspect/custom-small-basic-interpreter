@@ -155,7 +155,7 @@ private:
 		operation = token.outer[0];
 
 		if (!strchr("=<>", operation)) {
-			this->lexicalAnalyzer->serror(0);
+			this->lexicalAnalyzer->serror(14);
 		}
 		double yExp = this->expressionAnalizer->calcNextExpression();
 
@@ -193,7 +193,7 @@ private:
 
 			token = this->lexicalAnalyzer->getToken();
 			
-			if (token.outer != ",") this->lexicalAnalyzer->serror(1);
+			if (token.outer != ",") this->lexicalAnalyzer->serror(0);
 			token = this->lexicalAnalyzer->getToken();
 		}
 		else {
@@ -229,7 +229,7 @@ private:
 			this->lexicalAnalyzer->setProgramCursor(this->goSubStack->pop());
 		}
 		else {
-			this->lexicalAnalyzer->serror(0);
+			this->lexicalAnalyzer->serror(13);
 		}
 	}
 	void executeFor() {
@@ -264,7 +264,7 @@ private:
 	void executeNext() {
 
 		if (this->forStack->isEmpty()) {
-			this->lexicalAnalyzer->serror(10);
+			this->lexicalAnalyzer->serror(11);
 		}
 		ForCycle fc = this->forStack->pop();
 
@@ -322,7 +322,7 @@ public:
 	void executeAssigment(Token variableToken) {
 
 		if (variableToken.type != this->lexicalAnalyzer->tokenTypes.VARIABLE) {
-			this->lexicalAnalyzer->serror(3);
+			this->lexicalAnalyzer->serror(4);
 		}
 
 		Variable var;
@@ -337,7 +337,7 @@ public:
 		Token assigmentToken = this->lexicalAnalyzer->getToken();
 
 		if (assigmentToken.outer != "=") {
-			this->lexicalAnalyzer->serror(4);
+			this->lexicalAnalyzer->serror(3);
 		} 
 
 		double expResult = this->expressionAnalizer->calcNextExpression();
