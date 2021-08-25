@@ -39,7 +39,7 @@ struct Command {
 class LexicalAnalyzer
 {
 private:
-	// Указатель на анализируемы символ программы
+	// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Р°РЅР°Р»РёР·РёСЂСѓРµРјС‹ СЃРёРјРІРѕР» РїСЂРѕРіСЂР°РјРјС‹
 	char* programCursor;
 
 	char* lastTokenStartPosition;
@@ -81,7 +81,7 @@ private:
 	}
 
 public:
-	// Внутренне представление для команд. Сами команды заполняются в конструкторе
+	// Р’РЅСѓС‚СЂРµРЅРЅРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РґР»СЏ РєРѕРјР°РЅРґ. РЎР°РјРё РєРѕРјР°РЅРґС‹ Р·Р°РїРѕР»РЅСЏСЋС‚СЃСЏ РІ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРµ
 	struct CommandsInner {
 		const int PRINT = 1;
 		const int INPUT = 2;
@@ -99,7 +99,7 @@ public:
 		const int STEP = 14;
 	} commandsInner;
 
-	// Доступные типы токенов
+	// Р”РѕСЃС‚СѓРїРЅС‹Рµ С‚РёРїС‹ С‚РѕРєРµРЅРѕРІ
 	struct TokenTypes {
 		const int DELIMITER = 1;
 		const int VARIABLE = 2;
@@ -111,7 +111,7 @@ public:
 	} tokenTypes;
 
 	LexicalAnalyzer(char* programCode) {
-		// Заполнение доступными командами
+		// Р—Р°РїРѕР»РЅРµРЅРёРµ РґРѕСЃС‚СѓРїРЅС‹РјРё РєРѕРјР°РЅРґР°РјРё
 		this->commands->push_back(Command("print", this->commandsInner.PRINT));
 		this->commands->push_back(Command("input", this->commandsInner.INPUT));
 		this->commands->push_back(Command("if", this->commandsInner.IF));
@@ -130,7 +130,7 @@ public:
 		this->savedProgramCursorPosition = programCode;
 		this->lastTokenStartPosition = programCode;
 
-		// Заполнение меток для дальнейшей работы GOTO и GOSUB
+		// Р—Р°РїРѕР»РЅРµРЅРёРµ РјРµС‚РѕРє РґР»СЏ РґР°Р»СЊРЅРµР№С€РµР№ СЂР°Р±РѕС‚С‹ GOTO Рё GOSUB
 		this->saveProgramCursorPosition();
 
 		Token token;
@@ -188,10 +188,10 @@ public:
 			this->programCursor++;
 
 			while (*this->programCursor != '"' && *this->programCursor != 10) {
-				token->outer += *this->programCursor++; // копирование строки при помощи арифметики указателей
+				token->outer += *this->programCursor++; // РєРѕРїРёСЂРѕРІР°РЅРёРµ СЃС‚СЂРѕРєРё РїСЂРё РїРѕРјРѕС‰Рё Р°СЂРёС„РјРµС‚РёРєРё СѓРєР°Р·Р°С‚РµР»РµР№
 			}
 
-			// Если произошёл перенос строки до того, как была встречена закрывающая ковычка
+			// Р•СЃР»Рё РїСЂРѕРёР·РѕС€С‘Р» РїРµСЂРµРЅРѕСЃ СЃС‚СЂРѕРєРё РґРѕ С‚РѕРіРѕ, РєР°Рє Р±С‹Р»Р° РІСЃС‚СЂРµС‡РµРЅР° Р·Р°РєСЂС‹РІР°СЋС‰Р°СЏ РєРѕРІС‹С‡РєР°
 			if (*this->programCursor == 10) this->serror(15); // \n
 			this->programCursor++;
 
@@ -246,19 +246,19 @@ public:
 		throw LabelNotFoundException();
 	}
 
-	// Сохраняет позицию указателя на анализируемый символ программы this->programCursor
+	// РЎРѕС…СЂР°РЅСЏРµС‚ РїРѕР·РёС†РёСЋ СѓРєР°Р·Р°С‚РµР»СЏ РЅР° Р°РЅР°Р»РёР·РёСЂСѓРµРјС‹Р№ СЃРёРјРІРѕР» РїСЂРѕРіСЂР°РјРјС‹ this->programCursor
 	void saveProgramCursorPosition() {
 		this->savedProgramCursorPosition = this->programCursor;
 	}
 
-	// Откатывает позицию указателя this->programCursor на момент вызова saveProgramCursorPosition
+	// РћС‚РєР°С‚С‹РІР°РµС‚ РїРѕР·РёС†РёСЋ СѓРєР°Р·Р°С‚РµР»СЏ this->programCursor РЅР° РјРѕРјРµРЅС‚ РІС‹Р·РѕРІР° saveProgramCursorPosition
 	void rollBackToSavedPosition() {
 		if (this->savedProgramCursorPosition) {
 			this->programCursor = this->savedProgramCursorPosition;
 		}
 	}
 
-	// Откатывает programCursor на один токен назад
+	// РћС‚РєР°С‚С‹РІР°РµС‚ programCursor РЅР° РѕРґРёРЅ С‚РѕРєРµРЅ РЅР°Р·Р°Рґ
 	void toPreviousToken() {
 		if (this->lastTokenStartPosition != nullptr) {
 			this->programCursor = this->lastTokenStartPosition;
@@ -296,22 +296,22 @@ public:
 
 	void serror(int type) {
 		string errors[] = {
-			"Синтаксическая ошибка", // 0
-			"Непарные круглые скобки", // 1
-			"Это не выражение", // 2
-			"Предполагается символ равенства", // 3
-			"Не переменная", // 4
-			"Таблица меток переполнена", // 5
-			"Дублирование меток", // 6
-			"Неопределенная метка", // 7
-			"Необходим оператор THEN", // 8
-			"Необходим оператор TO", // 9
-			"Уровень вложенности цикла FOR слишком велик", // 10
-			"NEXT не соответствует FOR", // 11
-			"Уровень вложенности GOSUB слишком велик",// 12
-			"RETURN не соответствует GOSUB" // 13
-			"Ожидался логический оператор" // 14
-			"Отсутствует закрывающая ковычка для строки" // 15
+			"РЎРёРЅС‚Р°РєСЃРёС‡РµСЃРєР°СЏ РѕС€РёР±РєР°", // 0
+			"РќРµРїР°СЂРЅС‹Рµ РєСЂСѓРіР»С‹Рµ СЃРєРѕР±РєРё", // 1
+			"Р­С‚Рѕ РЅРµ РІС‹СЂР°Р¶РµРЅРёРµ", // 2
+			"РџСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ СЃРёРјРІРѕР» СЂР°РІРµРЅСЃС‚РІР°", // 3
+			"РќРµ РїРµСЂРµРјРµРЅРЅР°СЏ", // 4
+			"РўР°Р±Р»РёС†Р° РјРµС‚РѕРє РїРµСЂРµРїРѕР»РЅРµРЅР°", // 5
+			"Р”СѓР±Р»РёСЂРѕРІР°РЅРёРµ РјРµС‚РѕРє", // 6
+			"РќРµРѕРїСЂРµРґРµР»РµРЅРЅР°СЏ РјРµС‚РєР°", // 7
+			"РќРµРѕР±С…РѕРґРёРј РѕРїРµСЂР°С‚РѕСЂ THEN", // 8
+			"РќРµРѕР±С…РѕРґРёРј РѕРїРµСЂР°С‚РѕСЂ TO", // 9
+			"РЈСЂРѕРІРµРЅСЊ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё С†РёРєР»Р° FOR СЃР»РёС€РєРѕРј РІРµР»РёРє", // 10
+			"NEXT РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ FOR", // 11
+			"РЈСЂРѕРІРµРЅСЊ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё GOSUB СЃР»РёС€РєРѕРј РІРµР»РёРє",// 12
+			"RETURN РЅРµ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ GOSUB" // 13
+			"РћР¶РёРґР°Р»СЃСЏ Р»РѕРіРёС‡РµСЃРєРёР№ РѕРїРµСЂР°С‚РѕСЂ" // 14
+			"РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ Р·Р°РєСЂС‹РІР°СЋС‰Р°СЏ РєРѕРІС‹С‡РєР° РґР»СЏ СЃС‚СЂРѕРєРё" // 15
 		};
 		cout << endl << errors[type];
 		exit(1);

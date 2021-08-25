@@ -6,8 +6,8 @@ class ForDepthLimitException : public exception {};
 class GoSubDepthLimitException : public exception {};
 
 struct ForCycle {
-	Variable var; // Ñ÷åò÷èê öèêëà
-	double target; // Êîíå÷íîå çíà÷åíèå
+	Variable var; // Ð¡Ñ‡ÐµÑ‚Ñ‡Ð¸Ðº Ñ†Ð¸ÐºÐ»Ð°
+	double target; // ÐšÐ¾Ð½ÐµÑ‡Ð½Ð¾Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ
 	char* position;
 	double step = 1;
 };
@@ -94,7 +94,7 @@ private:
 				
 				token = this->lexicalAnalyzer->getToken();
 			}
-			else { // Âûðàæåíèå
+			else { // Ð’Ñ‹Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ
 				this->lexicalAnalyzer->toPreviousToken();
 				expResult = this->expressionAnalizer->calcNextExpression();
 				token = this->lexicalAnalyzer->getToken();
@@ -104,7 +104,7 @@ private:
 				printableContentLenght += str.length();
 			}
 
-			if (token.outer == ";") {  // Âû÷èñëåíèå ÷èñëà ïðîáåëîâ ïðè ïåðåõîäå ê ñëåäóþùåé òàáóëÿöèè
+			if (token.outer == ";") {  // Ð’Ñ‹Ñ‡Ð¸ÑÐ»ÐµÐ½Ð¸Ðµ Ñ‡Ð¸ÑÐ»Ð° Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð¾Ð² Ð¿Ñ€Ð¸ Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ðµ Ðº ÑÐ»ÐµÐ´ÑƒÑŽÑ‰ÐµÐ¹ Ñ‚Ð°Ð±ÑƒÐ»ÑÑ†Ð¸Ð¸
 				spacesCount = 8 - (printableContentLenght % 8);
 				printableContentLenght += spacesCount;
 				while (spacesCount) {
@@ -112,7 +112,7 @@ private:
 					spacesCount--;
 				}
 			}
-			else if(token.outer == ",") {} // Íè÷åãî íå äåëàåì
+			else if(token.outer == ",") {} // ÐÐ¸Ñ‡ÐµÐ³Ð¾ Ð½Ðµ Ð´ÐµÐ»Ð°ÐµÐ¼
 			else if (
 				token.inner != this->lexicalAnalyzer->commandsInner.EOL
 				&& token.inner != this->lexicalAnalyzer->commandsInner.FINISHED
@@ -178,7 +178,7 @@ private:
 				this->lexicalAnalyzer->serror(8);
 				return;
 			}
-			// Ïðîãðàìà ïðîäîëæàåòñÿ ñî ñëåä ñòðî÷êè => âûïîëíÿåòñÿ óñëîâèå if
+			// ÐŸÑ€Ð¾Ð³Ñ€Ð°Ð¼Ð° Ð¿Ñ€Ð¾Ð´Ð¾Ð»Ð¶Ð°ÐµÑ‚ÑÑ ÑÐ¾ ÑÐ»ÐµÐ´ ÑÑ‚Ñ€Ð¾Ñ‡ÐºÐ¸ => Ð²Ñ‹Ð¿Ð¾Ð»Ð½ÑÐµÑ‚ÑÑ ÑƒÑÐ»Ð¾Ð²Ð¸Ðµ if
 		}
 		else this->lexicalAnalyzer->toNExtEOL();
 	}
@@ -222,7 +222,7 @@ private:
 			this->lexicalAnalyzer->serror(7);
 		}
 		this->goSubStack->push(this->lexicalAnalyzer->getProgramCursor());
-		this->lexicalAnalyzer->setProgramCursor(label.programPosision);  // Ìåñòî, êóäà ïåðåõîäèì
+		this->lexicalAnalyzer->setProgramCursor(label.programPosision);  // ÐœÐµÑÑ‚Ð¾, ÐºÑƒÐ´Ð° Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð¸Ð¼
 	}
 	void executeReturn() {
 		if (!this->goSubStack->isEmpty()) { 
@@ -235,7 +235,7 @@ private:
 	void executeFor() {
 		ForCycle fc;
 
-		// ÷òåíèå óïðàâëÿþùåé ïåðåìåííîé
+		// Ñ‡Ñ‚ÐµÐ½Ð¸Ðµ ÑƒÐ¿Ñ€Ð°Ð²Ð»ÑÑŽÑ‰ÐµÐ¹ Ð¿ÐµÑ€ÐµÐ¼ÐµÐ½Ð½Ð¾Ð¹
 		Token token = this->lexicalAnalyzer->getToken();
 		this->executeAssigment(token);
 		Variable var = this->variablesStore->getVariableByName(token.outer);

@@ -13,7 +13,7 @@ void main() {
     char* temp = (char*)malloc(1000);
 
     ifstream program;
-    program.open("..\\proga1.txt");
+    program.open("..\\basic_program_code.txt");
 
     char* prog = temp;
     while (program.get(*temp)) {
